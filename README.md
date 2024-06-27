@@ -5,11 +5,8 @@
 created an application called Note Taker that can be used to write, save and delete notes.
 
 ## Table of Contents
-- [Installation](#installation)
 - [Usage](#usage)
-- [Contributing](#contributing)
 - [License](#license)
-- [Tests](#tests)
 - [Questions](#questions)
 
 ## Installation 
@@ -18,15 +15,11 @@ Clone the code from the GitHub repository and then run npm i in the console.
 ## Usage 
 
 
-## Contributing 
-none
 
 ## License 
 MIT
 https://opensource.org/licenses/MIT
 
-## Test
-N/A
 
 ## Questions
     
