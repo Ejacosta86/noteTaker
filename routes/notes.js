@@ -1,47 +1,65 @@
 const notes = require('express').Router();
 const { v4: uuidv4 } = require('uuid');
-const fs = require('fs');
-const path = require('path');
+// const fs = require('fs');
+// const path = require('path');
 
 const { readFromFile, writeToFile, readAndAppend } = require('../helper/fsUtils');
 
-
-//GET Route for retrieving notes
-notes.get('/', (res, req) => {
-    readFromFile(path.join(__dirname,'../db/db.json')).then((data) => res.json(JSON.parse(data)));
+//GET Route for retrieving all notes
+notes.get('/', (req, res) => {
+    readFromFile('./db/db.json').then((data) => res.json(JSON.parse(data)));
 });
 
+// GET Route for a specific note
+notes.get('/:note_id', (req, res) => {
+    const noteId = req.params.note_id;
+    readFromFile('./db/db.json')
+      .then((data) => JSON.parse(data))
+      .then((json) => {
+        const result = json.filter((note) => note.note_id === noteId);
+        return result.length > 0
+          ? res.json(result)
+          : res.json('No note with that ID');
+      });
+  });
 
-//POST Route for submitting
-notes.post('./', (res, req) => {
+//POST Route for a new note
+notes.post('/', (req, res) => {
+    console.log(req.body);
+
     const { title, text } = req.body;
 
-    if(title && text) {
+    if (req.body) {
         const newNote = {
-            title,
-            text,
-            id: uuidv4(),
-        };
+        title,
+        text,
+        id: uuidv4(),
+    };
 
-    readAndAppend(newNote, path.join(__dirname, '../db/db.json'));
-
-    res.json('Note was added!');
+    readAndAppend(newNote, './db/db.json');
+    res.json('Note was added successfully!');
     } else {
     res.error('Error in adding note');
     }
 });
 
 //Deleting notes
-notes.delete('/:id', (res, req) => {
-    const noteId = req.params.id;
+notes.delete('/:note_id', (req, res) => {
+    const noteId = req.params.note_id;
+    readFromFile('./db/db.json')
+      .then((data) => JSON.parse(data))
+      .then((json) => {
+        // Make a new array of all tips except the one with the ID provided in the URL
+        const result = json.filter((note) => note.note_id !== noteId);
+  
+        // Save that array to the filesystem
+        writeToFile('./db/db.json', result);
+  
+        // Respond to the DELETE request
+        res.json(`Note ${noteId} has been deleted`);
+      });
+  });
 
-    readFromFile(path.join(__dirname, '../db/db.json')).then((data) => {
-        const notes = JSON.parse(data);
-        const updatedNotes = notes.filter((note) => note.id !== noteId);
 
-    writeToFile(path.join(__dirname, '../db/db.json'), updatedNotes);
-        res.json(`Note with ID ${noteId} deleted`);
-    });
-});
 
 module.exports = notes;
