@@ -1,20 +1,20 @@
 const notes = require('express').Router();
-// const { v4: uuidv4 } = require('uuid');
-const path = require('path');
+const { v4: uuidv4 } = require('uuid');
 const fs = require('fs');
+const path = require('path');
 
 const { readFromFile, writeToFile, readAndAppend } = require('../helper/fsUtils');
 
 
 //GET Route for retrieving notes
-notes.get('/', (res, req) =>{
+notes.get('/', (res, req) => {
     readFromFile(path.join(__dirname,'../db/db.json')).then((data) => res.json(JSON.parse(data)));
 });
 
 
 //POST Route for submitting
-notes.post('./', (res, req) =>{
-    const {title, text} = req.body;
+notes.post('./', (res, req) => {
+    const { title, text } = req.body;
 
     if(title && text) {
         const newNote = {
@@ -37,10 +37,10 @@ notes.delete('/:id', (res, req) => {
 
     readFromFile(path.join(__dirname, '../db/db.json')).then((data) => {
         const notes = JSON.parse(data);
-        const updateNotes = notes.filter((note) => noteId.id !== noteId);
+        const updatedNotes = notes.filter((note) => note.id !== noteId);
 
     writeToFile(path.join(__dirname, '../db/db.json'), updatedNotes);
-        res.json('Note with ID ${noteId} deleted');
+        res.json(`Note with ID ${noteId} deleted`);
     });
 });
 
